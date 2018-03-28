@@ -1,0 +1,159 @@
+﻿<Window x:Class="Inlämningsuppgiftny.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Inlämningsuppgiftny" WindowStartupLocation="CenterScreen"
+        local:DialogCloser.DialogResult="{Binding CloseWindowFlag}"
+    mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525" Background="AliceBlue">
+    
+    <Window.Resources>
+
+      
+        <local:SelectedItemToItemsSource x:Key="SelectedItemToItemsSource"/>
+        <Style x:Key="textstyle" TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="true">
+                    <Setter Property = "Background" Value = "LightBlue" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ControlTemplate x:Key="ValidationTemplate">
+            <DockPanel>
+                <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="TextBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+              Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                              Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ComboBoxInError" TargetType="{x:Type ComboBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+              Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                              Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Border Padding="10">
+        <StackPanel>
+            <TextBlock Text="Competition Creator" FontWeight="Bold" Margin="0 10" />
+
+            <!-- Name -->
+            <TextBlock Text="Name" />
+            <TextBox x:Name="CompName" Background="#eee" Text="{Binding Path = Competion.Name, UpdateSourceTrigger=PropertyChanged}" Padding="2" />
+
+
+            <!-- Date and Address -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+
+
+                <StackPanel Grid.Column="0" Margin="0 0 10 10">
+                    <TextBlock Text="Date"/>
+                    <TextBox Background="#eee" Padding="2"                  
+                         Validation.ErrorTemplate="{StaticResource ValidationTemplate}"
+                         Style="{StaticResource TextBoxInError}">
+                        <TextBox.Text>
+                            <Binding Path="Competion.Date">
+                                <Binding.Converter>
+                                    <local:SelectedItemToItemsSource/>
+                                </Binding.Converter>
+                                <Binding.ValidationRules>
+                                    <local:DateValidator ValidationStep="RawProposedValue"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </StackPanel>
+                <!-- Competition Name -->
+                <StackPanel Grid.Column="1" Margin="0 0 10 10">
+                    <TextBlock Text="Address" />
+                    <TextBox x:Name ="tb1" Text="{Binding Path=Competion.Address, UpdateSourceTrigger=PropertyChanged}"  Background="#eee"  Padding="2" />
+                </StackPanel>
+
+                <!-- Date -->
+
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+                <!-- Rounds -->
+                <StackPanel Grid.Column="0" Margin=" 0 0 10 10">
+                    <TextBlock Text="Rounds. Default is 3." />
+                    <TextBox x:Name="Rounds" Text="{Binding Path = Competion.Round, UpdateSourceTrigger=PropertyChanged}" Background="#eee"  Padding="2" />
+
+                </StackPanel>
+            </Grid>
+
+
+
+            <!-- Buttons1 -->
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0 0 10 10">
+                    <Button  Content="Add Competion"  Command="{Binding AddCompetionCommand}" CommandParameter="{Binding Text, ElementName=CompName}" Margin="0 0 0 0 " Focusable="False" Grid.ColumnSpan="2"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="0 0 10 10">
+                    <Button  Content="Reset Fields"  Command="{Binding ResetFieldsCommand}" CommandParameter="{Binding Text, ElementName=tb1}" Margin="0 0 0 0 " Focusable="False" Grid.ColumnSpan="2"/>
+                </StackPanel>
+
+
+            </Grid>
+            <!-- Competions added-->
+            <TextBlock Text="Competitions Added:" FontWeight="Bold" Margin="0 10" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBox Padding ="2" Background="#eee" IsReadOnly="True" Text="{Binding Path=Newcomp.Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <TextBox Padding ="2" Background="#eee" IsReadOnly="True" Text="{Binding Path=Newcomp.Date, Converter={StaticResource SelectedItemToItemsSource}, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <TextBox Padding ="2" Background="#eee"  IsReadOnly="True" Text="{Binding Path=Newcomp.Address, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+                </StackPanel>
+
+            </Grid>
+            <!-- Buttons2 -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0 10 10 10">
+                    <Button  Content="Move to Registration"  Command="{Binding ToRegistrationCommand}" CommandParameter="{Binding Text, ElementName=CompName}" Margin="0 0 0 0 " Focusable="False" Grid.ColumnSpan="2"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Border>
+</Window>
